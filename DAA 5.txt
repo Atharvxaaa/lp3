@@ -1,0 +1,45 @@
+DAA 5
+
+def solve_n_queens(n):
+    cols = set()
+    pos_diag = set()  # (r + c)
+    neg_diag = set()  # (r - c)
+    results = []
+
+    board = [["-"] * n for _ in range(n)]
+
+    def place_queen(r):
+        # If all queens are placed, store solution
+        if r == n:
+            config = [" ".join(row) for row in board]
+            results.append(config)
+            return
+
+        for c in range(n):
+            # Skip invalid placements
+            if c in cols or (r + c) in pos_diag or (r - c) in neg_diag:
+                continue
+
+            cols.add(c)
+            pos_diag.add(r + c)
+            neg_diag.add(r - c)
+            board[r][c] = "Q"
+
+            place_queen(r + 1)
+
+            # Backtrack step
+            cols.remove(c)
+            pos_diag.remove(r + c)
+            neg_diag.remove(r - c)
+            board[r][c] = "-"
+
+    place_queen(0)  # ✅ start from row 0, not 5
+    print(f"Solutions for {n}-Queens Problem:\n")
+    for i, solution in enumerate(results, 1):
+        print(f"Solution {i}:")
+        for row in solution:
+            print(row)
+        print()
+
+if __name__ == "__main__":
+    solve_n_queens(5)
