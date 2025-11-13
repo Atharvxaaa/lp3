@@ -1,0 +1,46 @@
+# ========== PRACTICAL 3: FRACTIONAL KNAPSACK ==========
+# Greedy Algorithm
+# Time Complexity: O(n log n)
+# Space Complexity: O(n)
+
+def fractional_knapsack(weights, values, capacity):
+    # Create list of (value/weight ratio, weight, value)
+    ratio = [(values[i]/weights[i], weights[i], values[i]) for i in range(len(weights))]
+    
+    # Sort by ratio in descending order (greedy choice)
+    ratio.sort(reverse=True)
+    
+    total_value = 0.0
+    remaining_capacity = capacity
+    
+    print("Item selection (Greedy approach):")
+    for r, w, v in ratio:
+        if remaining_capacity >= w:
+            # Take entire item
+            total_value += v
+            remaining_capacity -= w
+            print(f"  Take item with value={v}, weight={w}, ratio={r:.2f}")
+        else:
+            # Take fraction of item
+            fraction = remaining_capacity / w
+            total_value += v * fraction
+            print(f"  Take {fraction:.2f} fraction of item with value={v}, weight={w}")
+            break
+    
+    return total_value
+
+# Example:
+values = [60, 100, 120]
+weights = [10, 20, 30]
+capacity = 50
+
+print("Items:")
+for i in range(len(values)):
+    print(f"  Item {i+1}: value={values[i]}, weight={weights[i]}, ratio={values[i]/weights[i]:.2f}")
+
+print(f"\nKnapsack Capacity: {capacity}")
+print()
+
+max_value = fractional_knapsack(weights, values, capacity)
+
+print(f"\nMaximum value in Fractional Knapsack = {max_value:.2f}")

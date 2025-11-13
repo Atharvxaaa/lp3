@@ -1,0 +1,65 @@
+# ========== PRACTICAL 2: HUFFMAN ENCODING ==========
+# Greedy Algorithm
+# Time Complexity: O(n log n)
+# Space Complexity: O(n)
+
+import heapq
+
+class Node:
+    def __init__(self, char, freq):
+        self.char = char
+        self.freq = freq
+        self.left = None
+        self.right = None
+    
+    def __lt__(self, other):
+        return self.freq < other.freq
+
+def generate_codes(node, code, codes):
+    if node:
+        if node.char:
+            codes[node.char] = code
+        generate_codes(node.left, code + "0", codes)
+        generate_codes(node.right, code + "1", codes)
+
+def huffman_encoding(char_freq):
+    heap = [Node(ch, freq) for ch, freq in char_freq.items()]
+    heapq.heapify(heap)
+    
+    while len(heap) > 1:
+        left = heapq.heappop(heap)
+        right = heapq.heappop(heap)
+        merged = Node(None, left.freq + right.freq)
+        merged.left = left
+        merged.right = right
+        heapq.heappush(heap, merged)
+    
+    root = heap[0]
+    codes = {}
+    generate_codes(root, "", codes)
+    return codes
+
+# Example: Encode text
+text = "mrugank"
+freq = {}
+
+for ch in text:
+    freq[ch] = freq.get(ch, 0) + 1
+
+print("Character Frequencies:")
+for ch, f in freq.items():
+    print(f"  {ch}: {f}")
+
+codes = huffman_encoding(freq)
+
+print("\nHuffman Codes:")
+for ch, code in codes.items():
+    print(f"  {ch}: {code}")
+
+# Encode the text
+encoded_text = "".join(codes[ch] for ch in text)
+print(f"\nOriginal Text: {text}")
+print(f"Encoded: {encoded_text}")
+print(f"Original Size: {len(text) * 8} bits")
+print(f"Encoded Size: {len(encoded_text)} bits")
+print(f"Compression: {(1 - len(encoded_text)/(len(text)*8)) * 100:.2f}%")

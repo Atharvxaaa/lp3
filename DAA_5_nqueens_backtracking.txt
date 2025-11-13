@@ -1,0 +1,77 @@
+# ========== PRACTICAL 5: N-QUEENS ==========
+# Backtracking Algorithm
+# Time Complexity: O(N!)
+# Space Complexity: O(N)
+
+def is_safe(board, row, col, n):
+    """Check if placing queen at (row, col) is safe"""
+    
+    # Check row on left side
+    for j in range(col):
+        if board[row][j] == 1:
+            return False
+    
+    # Check upper left diagonal
+    i, j = row, col
+    while i >= 0 and j >= 0:
+        if board[i][j] == 1:
+            return False
+        i -= 1
+        j -= 1
+    
+    # Check lower left diagonal
+    i, j = row, col
+    while i < n and j >= 0:
+        if board[i][j] == 1:
+            return False
+        i += 1
+        j -= 1
+    
+    return True
+
+def solve_nqueens_util(board, col, n):
+    """Recursive backtracking function"""
+    
+    # Base case: all queens placed
+    if col >= n:
+        return True
+    
+    # Try placing queen in each row of current column
+    for row in range(n):
+        if is_safe(board, row, col, n):
+            # Place queen
+            board[row][col] = 1
+            
+            # Recurse to next column
+            if solve_nqueens_util(board, col + 1, n):
+                return True
+            
+            # Backtrack: remove queen
+            board[row][col] = 0
+    
+    return False
+
+def solve_nqueens(n):
+    """Main function to solve N-Queens problem"""
+    
+    # Initialize board with all zeros
+    board = [[0 for _ in range(n)] for _ in range(n)]
+    
+    # Solve
+    if solve_nqueens_util(board, 0, n):
+        print(f"Solution for {n}-Queens Problem:\n")
+        for row in board:
+            for cell in row:
+                print("Q" if cell == 1 else ".", end=" ")
+            print()
+        return True
+    else:
+        print(f"No solution exists for {n}-Queens")
+        return False
+
+# Main
+n = int(input("Enter the value of N: "))
+if n <= 0:
+    print("Please enter a positive integer")
+else:
+    solve_nqueens(n)

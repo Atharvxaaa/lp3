@@ -1,0 +1,18 @@
+# ========== PRACTICAL 1B: FIBONACCI - RECURSIVE ==========
+# Time Complexity: O(2^n) - EXPONENTIAL!
+# Space Complexity: O(n) - call stack
+
+def fibonacci_recursive(n):
+    if n <= 1:
+        return n
+    else:
+        return fibonacci_recursive(n-1) + fibonacci_recursive(n-2)
+
+n = int(input("Enter number of terms: "))
+if n <= 0:
+    print("Please enter a positive integer")
+else:
+    print("Fibonacci series (recursive):")
+    for i in range(n):
+        print(fibonacci_recursive(i), end=" ")
+    print()

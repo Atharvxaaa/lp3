@@ -1,0 +1,17 @@
+# ========== PRACTICAL 1A: FIBONACCI - NON-RECURSIVE (ITERATIVE) ==========
+# Time Complexity: O(n)
+# Space Complexity: O(1)
+
+def fibonacci_iterative(n):
+    a, b = 0, 1
+    print("Fibonacci series (iterative):")
+    for _ in range(n):
+        print(a, end=" ")
+        a, b = b, a + b
+    print()
+
+n = int(input("Enter number of terms: "))
+if n <= 0:
+    print("Please enter a positive integer")
+else:
+    fibonacci_iterative(n)

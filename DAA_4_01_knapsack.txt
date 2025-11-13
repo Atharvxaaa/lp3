@@ -1,0 +1,55 @@
+# ========== PRACTICAL 4: 0-1 KNAPSACK ==========
+# Dynamic Programming
+# Time Complexity: O(n * capacity)
+# Space Complexity: O(n * capacity)
+
+def knapsack_01(weights, values, capacity):
+    n = len(values)
+    
+    # Create DP table
+    # dp[i][w] = max value using first i items with capacity w
+    dp = [[0] * (capacity + 1) for _ in range(n + 1)]
+    
+    # Fill DP table
+    for i in range(1, n + 1):
+        for w in range(1, capacity + 1):
+            if weights[i-1] <= w:
+                # Item i-1 can fit
+                # Take max of: take item OR skip item
+                dp[i][w] = max(
+                    values[i-1] + dp[i-1][w - weights[i-1]],  # Take item
+                    dp[i-1][w]                                  # Skip item
+                )
+            else:
+                # Item doesn't fit, skip it
+                dp[i][w] = dp[i-1][w]
+    
+    # Backtrack to find which items were taken
+    items_taken = []
+    i, w = n, capacity
+    while i > 0 and w > 0:
+        # If value comes from taking item i-1
+        if dp[i][w] != dp[i-1][w]:
+            items_taken.append(i-1)
+            w -= weights[i-1]
+        i -= 1
+    
+    return dp[n][capacity], items_taken[::-1]
+
+# Example:
+values = [60, 100, 120]
+weights = [10, 20, 30]
+capacity = 50
+
+print("Items:")
+for i in range(len(values)):
+    print(f"  Item {i+1}: value={values[i]}, weight={weights[i]}")
+
+print(f"\nKnapsack Capacity: {capacity}")
+print()
+
+max_value, items_taken = knapsack_01(weights, values, capacity)
+
+print(f"Maximum value in 0-1 Knapsack = {max_value}")
+print(f"Items taken: {[i+1 for i in items_taken]}")
+print(f"Total weight: {sum(weights[i] for i in items_taken)}")
