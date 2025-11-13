@@ -1,0 +1,103 @@
+ML2
+
+import pandas as pd
+import numpy as np
+from sklearn.model_selection import train_test_split
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.svm import SVC
+from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# ========== STEP 1: Load Dataset ==========
+df = pd.read_csv('emails.csv')
+print("Dataset shape:", df.shape)
+print("Column names sample:")
+print(df.columns[:10].tolist())
+print(df.head())
+print("\nClass distribution:")
+print(df['Prediction'].value_counts())
+
+# ========== STEP 2: Prepare Features and Target ==========
+# Drop 'Email No.' column (not needed)
+X = df.drop(['Email No.', 'Prediction'], axis=1)
+y = df['Prediction']
+
+print(f"\nFeature matrix shape: {X.shape}")
+print(f"Target shape: {y.shape}")
+
+# ========== STEP 3: Train-Test Split ==========
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, 
+    test_size=0.3, 
+    random_state=42, 
+    stratify=y
+)
+
+print(f"\nTrain size: {X_train.shape[0]}, Test size: {X_test.shape[0]}")
+
+# ========== STEP 4: K-NEAREST NEIGHBORS ==========
+print("\n" + "="*50)
+print("K-NEAREST NEIGHBORS")
+print("="*50)
+
+knn = KNeighborsClassifier(n_neighbors=5, n_jobs=-1)
+knn.fit(X_train, y_train)
+knn_pred = knn.predict(X_test)
+knn_accuracy = accuracy_score(y_test, knn_pred)
+
+print(f"KNN Accuracy: {knn_accuracy:.4f}")
+print("Confusion Matrix:")
+print(confusion_matrix(y_test, knn_pred))
+
+# ========== STEP 5: SUPPORT VECTOR MACHINE ==========
+print("\n" + "="*50)
+print("SUPPORT VECTOR MACHINE")
+print("="*50)
+
+svm = SVC(kernel='rbf', C=1.0, random_state=42)
+svm.fit(X_train, y_train)
+svm_pred = svm.predict(X_test)
+svm_accuracy = accuracy_score(y_test, svm_pred)
+
+print(f"SVM Accuracy: {svm_accuracy:.4f}")
+print("Confusion Matrix:")
+print(confusion_matrix(y_test, svm_pred))
+
+# ========== STEP 6: Comparison & Visualization ==========
+print("\n" + "="*50)
+print("COMPARISON")
+print("="*50)
+print(f"KNN Accuracy: {knn_accuracy:.4f}")
+print(f"SVM Accuracy: {svm_accuracy:.4f}")
+
+if svm_accuracy > knn_accuracy:
+    print(f"\n✓ SVM is better!")
+else:
+    print(f"\n✓ KNN is better!")
+
+# Confusion Matrices
+knn_cm = confusion_matrix(y_test, knn_pred)
+svm_cm = confusion_matrix(y_test, svm_pred)
+
+fig, axes = plt.subplots(1, 2, figsize=(12, 4))
+
+sns.heatmap(knn_cm, annot=True, fmt='d', cmap='Blues', ax=axes[0])
+axes[0].set_title(f'KNN Confusion Matrix\nAccuracy: {knn_accuracy:.4f}')
+axes[0].set_ylabel('Actual')
+axes[0].set_xlabel('Predicted')
+
+sns.heatmap(svm_cm, annot=True, fmt='d', cmap='Greens', ax=axes[1])
+axes[1].set_title(f'SVM Confusion Matrix\nAccuracy: {svm_accuracy:.4f}')
+axes[1].set_ylabel('Actual')
+axes[1].set_xlabel('Predicted')
+
+plt.tight_layout()
+plt.show()
+
+# Classification Reports
+print("\nKNN Classification Report:")
+print(classification_report(y_test, knn_pred, target_names=['Not Spam', 'Spam']))
+
+print("\nSVM Classification Report:")
+print(classification_report(y_test, svm_pred, target_names=['Not Spam', 'Spam']))

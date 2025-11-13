@@ -1,0 +1,122 @@
+ML1
+
+cell 1 :
+
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
+import warnings
+# Suppress warnings for clean output
+warnings.filterwarnings("ignore")
+print("Libraries imported successfully!")
+
+cell 2 :
+
+# Load the dataset
+uber_data = pd.read_csv("uber.csv")
+print("Uber dataset loaded. Shape:", uber_data.shape)
+
+cell 3 :
+
+# Create a working copy of the dataset
+df = uber_data.copy()
+
+cell 4:
+
+# Display first few rows and basic stats
+print("Preview of dataset:")
+print(df.head())
+print("\nSummary statistics:")
+print(df.describe())
+
+cell 5:
+
+# Checking for null/missing values
+print("Missing values per column:\n", df.isnull().sum())
+
+cell 6:
+
+# Drop rows with missing values
+df = df.dropna()
+print("Post-drop shape:", df.shape)
+
+cell 7:
+
+# Plotting fare amount boxplot to detect outliers
+plt.figure(figsize=(8,4))
+plt.boxplot(df["fare_amount"])
+plt.title("Fare Amount Boxplot")
+plt.show()
+
+# Remove outliers for fare_amount
+df = df[(df["fare_amount"] > 0) & (df["fare_amount"] < 100)]
+print("Shape after outlier removal:", df.shape)
+
+cell 8:
+
+# Checking correlation matrix (select only numeric columns)
+numeric_cols = df.select_dtypes(include=[np.number])
+corr_matrix = numeric_cols.corr()
+print("Correlation matrix:\n", corr_matrix)
+
+# Plot heatmap for visual correlation
+plt.figure(figsize=(8,6))
+plt.imshow(corr_matrix, cmap='coolwarm', interpolation='none')
+plt.colorbar()
+plt.title("Correlation Heatmap (Uber Fare Features)")
+plt.xticks(range(len(corr_matrix.columns)), corr_matrix.columns, rotation=90)
+plt.yticks(range(len(corr_matrix.columns)), corr_matrix.columns)
+plt.show()
+
+cell 9:
+
+# Choose features for modeling
+features = ["pickup_longitude", "pickup_latitude", "dropoff_longitude", "dropoff_latitude", "passenger_count"]
+X = df[features]
+y = df["fare_amount"]
+
+cell 10:
+
+# Train-test split (80/20)
+from sklearn.model_selection import train_test_split
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+print("Train/Test sets ready.")
+
+
+cell 11 :
+
+# Train linear regression
+from sklearn.linear_model import LinearRegression
+lr = LinearRegression()
+lr.fit(X_train, y_train)
+y_pred_lr = lr.predict(X_test)
+print("Linear Regression model trained.")
+
+
+cell 12 :
+
+# Train random forest regression
+from sklearn.ensemble import RandomForestRegressor
+rf = RandomForestRegressor(n_estimators=50, random_state=42) # tweak estimator for authenticity
+rf.fit(X_train, y_train)
+y_pred_rf = rf.predict(X_test)
+print("Random Forest Regression model trained.")
+
+cell 13 :
+
+# Model score calculations
+from sklearn.metrics import mean_squared_error, r2_score
+
+# Linear Regression Metrics
+lrrmse = np.sqrt(mean_squared_error(y_test, y_pred_lr))
+lrr2 = r2_score(y_test, y_pred_lr)
+
+# Random Forest Metrics
+rfrrmse = np.sqrt(mean_squared_error(y_test, y_pred_rf))
+rfrr2 = r2_score(y_test, y_pred_rf)
+
+# Print out results
+print("Model Comparison Results")
+print(f"Linear Regression -> RMSE: {lrrmse:.2f}, R2: {lrr2:.4f}")
+print(f"Random Forest     -> RMSE: {rfrrmse:.2f}, R2: {rfrr2:.4f}")

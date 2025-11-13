@@ -1,0 +1,65 @@
+ml4
+
+cell 1:
+
+import pandas as pd
+import numpy as np
+from sklearn.model_selection import train_test_split
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.metrics import confusion_matrix, accuracy_score, precision_score, recall_score, f1_score
+
+print("All libraries imported successfully!")
+
+cell 2:
+
+# Load the diabetes dataset
+data = pd.read_csv('diabetes.csv')
+print("Data loaded! Shape:", data.shape)
+
+cell 3:
+
+columns_with_zero = ['Glucose', 'BloodPressure', 'SkinThickness', 'Insulin', 'BMI']
+
+for col in columns_with_zero:
+    data[col] = data[col].replace(0, np.nan)
+    data[col] = data[col].fillna(data[col].mean())
+
+print("Missing values handled (zero replaced with mean) for selected columns.")
+
+cell 4:
+
+# Select features and output
+X = data.iloc[:, :-1]
+y = data['Outcome']
+
+# Split data (80% train, 20% test)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=1)
+
+print("Train and test sets created! Train samples:", X_train.shape[0], "Test samples:", X_test.shape[0])
+
+cell 5:
+
+# Initialize and train KNN classifier
+knn_model = KNeighborsClassifier(n_neighbors=5)
+knn_model.fit(X_train, y_train)
+print("KNN model trained.")
+
+cell 6:
+
+# Predict on test set
+y_pred = knn_model.predict(X_test)
+
+# Calculate metrics
+cm = confusion_matrix(y_test, y_pred)
+acc = accuracy_score(y_test, y_pred)
+error = 1 - acc
+prec = precision_score(y_test, y_pred)
+rec = recall_score(y_test, y_pred)
+f1 = f1_score(y_test, y_pred)
+
+print("Confusion Matrix:\n", cm)
+print("Accuracy:", acc)
+print("Error Rate:", error)
+print("Precision:", prec)
+print("Recall:", rec)
+print("F1 Score:", f1)

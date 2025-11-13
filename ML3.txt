@@ -1,0 +1,70 @@
+ML3
+
+# ============================================
+# GRADIENT DESCENT: y = (x+3)^2, starting x = 2
+# ============================================
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+cell 2 
+
+# Define the function for which we want to find the local minima
+def f(x):
+    return (x + 3)**2
+
+cell 3
+
+# Derivative of the function (gradient)
+def grad_f(x):
+    return 2 * (x + 3)
+
+cell 4 : Gradient Descent Algorithm ==========
+
+def gradient_descent(start_x=2, learning_rate=0.1, max_iter=50, tol=1e-6):
+    x_current = start_x
+    x_path = [x_current]
+
+    for _ in range(max_iter):
+        grad_val = grad_f(x_current)
+        x_new = x_current - learning_rate * grad_val
+
+        x_path.append(x_new)
+
+        # Check if convergence criterion met
+        if abs(x_new - x_current) < tol:
+            break
+
+        x_current = x_new
+
+    return x_current, f(x_current), x_path
+
+cell 5 : 
+
+min_x, min_y, x_positions = gradient_descent()
+
+print("Local minima found at x =", min_x)
+print("Minimum value of the function y =", min_y)
+
+cell 6:
+x_values = np.linspace(-6, 2, 100)
+y_values = f(x_values)
+
+plt.plot(x_values, y_values, label='Function: y=(x+3)^2')
+plt.scatter(x_positions, [f(x) for x in x_positions], color='red', label='Gradient Descent Steps')
+plt.title("Gradient Descent to find Local Minima")
+plt.xlabel("x")
+plt.ylabel("y")
+plt.legend()
+plt.show()
+
+extra cell
+
+print(f"\nSummary Statistics:")
+print(f"Starting point (x₀): {starting_point}")
+print(f"Learning rate (α): {learning_rate}")
+print(f"Number of iterations: {num_iterations}")
+print(f"Initial function value: {y_history[0]:.6f}")
+print(f"Final function value: {y_history[-1]:.6f}")
+print(f"Total decrease in y: {y_history[0] - y_history[-1]:.6f}")
+print(f"Theoretical minimum at x = -3 (where y = 0)")
